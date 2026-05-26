@@ -30,7 +30,7 @@ If you also want to capture traffic from the official app, install adb (`brew in
   - 1422 = instantaneous flow mL/s **(raw, NOT ×10 — unlike the pressure/temp registers next to it)**
   - 1405 = wall-clock deciseconds since brew start
 - Setpoint block at regs 0–36 (configuration, not telemetry).
-- Brew control via coil 150 (start), coil 154 (raw valve), coil 155 (clean), reg 87 (active mode 0–4).
+- Brew control via coil 150 (press-and-release toggles brew on/off — verified both start and mid-shot stop on 2026-05-26 via the Crema BLE client), coil 154 (raw valve), coil 155 (clean), reg 87 (active mode 0–4).
 - Profile-write sequence: header (7 regs) at slot base, then 6-reg stages with 3-reg gap, then reg 87 ← mode, then coil 150. Captured live and reproduced — see `PROTOCOL.md § 3` for byte-exact transcript.
 - FF55 channel carries two framings: opcode-indexed `FF55FFFF<op>` (session, name, etc.) and position-indexed `FF55 02 59 20 00 <len> <payload>` (heartbeat + grinder commands).
 

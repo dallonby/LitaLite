@@ -208,6 +208,17 @@ After writing the profile registers:
 
 To just *save* a profile without brewing, skip the coil-150 press pair.
 
+#### Stopping a brew in flight
+
+```
+0x05 coil 150 FF00                    # press the brew button again
+0x05 coil 150 0000                    # release
+```
+
+**Coil 150 is toggle behavior.** The same press-and-release gesture that starts a brew also stops one in flight. Verified live on 2026-05-26 against a LITA-BA: triggered a TestyT shot, then issued the press-and-release pair ~10 s in — the pump stopped, telemetry quiesced, the machine returned to idle. This was driven by Crema (Swift CoreBluetooth client), not the official app.
+
+The official app's stop sequence has not been HCI-snooped yet — it may use a more elaborate sequence (e.g. preserving last-shot state for review). The press-again pattern is the simplest thing that works.
+
 **Note:** earlier PROTOCOL.md said `ble_write(15, real_mode)` based on the legacy JS path in `model_make()`. **The live app actually writes reg 87, not reg 15** — confirmed by HCI snoop on 2026-05-26. Reg 15 is the legacy register, kept around in the binary but unused for the modern quick-key flow. Use reg 87.
 
 #### Full live-confirmed sequence (HCI snoop 2026-05-26)
