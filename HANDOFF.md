@@ -27,7 +27,7 @@ If you also want to capture traffic from the official app, install adb (`brew in
   - 1410 = brew pressure ×10 bar (real-time during shot)
   - 1411 = total volume mL
   - 1417 = active pump time s (excludes wait gaps)
-  - 1422 = instantaneous flow mL/s
+  - 1422 = instantaneous flow mL/s **(raw, NOT ×10 — unlike the pressure/temp registers next to it)**
   - 1405 = wall-clock deciseconds since brew start
 - Setpoint block at regs 0–36 (configuration, not telemetry).
 - Brew control via coil 150 (start), coil 154 (raw valve), coil 155 (clean), reg 87 (active mode 0–4).
@@ -70,7 +70,15 @@ Currently every script is a standalone CLI. Building `litalite/client.py` with a
 
 This project was reverse-engineered against a LITA-BA. The app supports `DATA-S`, `LITA-BA`, `LITA-BR`. The `machine_check_lita_*` Dart files suggest the per-model differences are mostly diagnostic-page UI; the wire protocol should be identical. Confirm by running `dump_gatt.py` against a LITA-BR or DATA-S — UUIDs, MTU, register layout should match.
 
-### 8. Steam wand BLE control (unlikely to exist on LITA-BA)
+### 8. Confirm reg 1422 flow scaling with a controlled brew
+
+We changed `record_brew.py` on 2026-05-26 to stop dividing reg 1422 by 10, based on a sanity-check of `captures/brew_testyt_full.csv`: a recorded peak of 0.4 mL/s in a shot delivering 68 mL over ~25 s pump-on time (avg ~2.7 mL/s) is physically impossible — peak must be ≥ avg. Removing the /10 puts peak around 4 mL/s, which lines up.
+
+This is an inference from one capture, not a controlled test. To confirm: run a brew with a known total target (e.g. 36 g out in 27 s, target ~1.3 mL/s avg) and check the recorded peak/avg are in the right ballpark. If something is still off, the units may be more exotic (mL per 100 ms? grams per second after density correction?) — diff `volume_ml` per-sample against the integral of `flow_ml_s` to find the actual scale factor.
+
+**Existing CSV captures predating the fix** (`brew_testyt.csv`, `brew_testyt_full.csv`) need a manual ×10 on the `flow_ml_s` column to read correctly. The Crema prototype's CSV loader compensates inline so the bundled captures still render right.
+
+### 9. Steam wand BLE control (unlikely to exist on LITA-BA)
 
 We confirmed the official app has no steam-trigger button and three "diancifa" valve symbols live only in the `project_setting/machine_check` diagnostic page. Steam on LITA-BA is presumed mechanical-only (turn-knob). The LITA-BR has dedicated `machine_check_lita_hot_water_*` variants which *might* mean an additional valve coil exists on that model. Worth checking if you have a LITA-BR available.
 

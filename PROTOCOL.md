@@ -104,7 +104,7 @@ Live values captured during a manual-M shot 2026-05-26 (~11 second pump-on). Reg
 | 1410 | `0x0582` | 0 | jumped to 88, held 86-88 throughout | 0 | **Brew pressure ×10 bar** (~8.8 bar — typical) — drops to 0 at shot end |
 | 1411 | `0x0583` | 0 | linear ramp 0→46 | 46 (held) | **Flow volume (mL)** ✓ user-confirmed 2026-05-26 |
 | 1417 | `0x0589` | 0 | linear ramp 0→15 | 15 (held) | **Shot time (s)** — matches 15 s shot duration |
-| 1422 | `0x058E` | 0 | brief 4-5, back to 0 mid-shot | 0 | **Instantaneous flow rate (mL/s)** — matches 1411/elapsed avg ~4.2 mL/s |
+| 1422 | `0x058E` | 0 | brief 4-5, back to 0 mid-shot | 0 | **Instantaneous flow rate (mL/s, raw — NOT ×10)** — confirmed 2026-05-26 by physical sanity check: recorded peak of 4 mL/s vs avg of ~2.7 mL/s (68 mL over ~25 s pump-on) is consistent with raw mL/s readings; treating it as ×10 gave a peak (0.4 mL/s) physically below the average, which is impossible. **This differs from the profile *write* path** — stage register 2 uses `flow × 10` (see §3 stage layout). Read and write conventions don't match on this register pair. |
 | 1404, 1406-1407, 1412-1416, 1418-1421, 1423 | — | 0 | did not move | 0 | unknown, idle-zero (possibly weight, pre-infusion phase, etc.) |
 
 ### 3b. Other holding-register block — reg 387+

@@ -19,7 +19,7 @@ CSV columns:
     t_ms,              elapsed ms since recording started
     elapsed_brew_ms,   ms since pressure first rose above threshold (None until then)
     pressure_bar,      reg 1410 / 10
-    flow_ml_s,         reg 1422 / 10
+    flow_ml_s,         reg 1422 (raw mL/s — NOT ×10 scaled, unlike pressure/temp)
     volume_ml,         reg 1411
     shot_time_s,       reg 1417
     progress_pct,      reg 1405
@@ -167,7 +167,12 @@ async def main(address: str, out_path: Path, do_start: bool,
                         t_ms,
                         elapsed_brew_ms if elapsed_brew_ms is not None else "",
                         pressure_raw / 10.0,
-                        flow_raw / 10.0,
+                        # Reg 1422 is in raw mL/s — *not* ×10 like pressure/temp.
+                        # Earlier versions divided by 10 here on the assumption it
+                        # followed the same scaling, which produced peaks (~0.4 mL/s)
+                        # an order of magnitude smaller than the volume-over-time
+                        # average implied. See HANDOFF.md "flow scaling".
+                        flow_raw,
                         volume,
                         shot_time,
                         progress,
@@ -185,7 +190,7 @@ async def main(address: str, out_path: Path, do_start: bool,
                     elif pressure_raw == 0:
                         marker = "(p=0)"
                     print(f"  {t_ms:7d}ms  p={pressure_raw/10:>4.1f}bar  "
-                          f"f={flow_raw/10:>4.1f}mL/s  vol={volume:>3}mL  "
+                          f"f={flow_raw:>4.1f}mL/s  vol={volume:>3}mL  "
                           f"t={shot_time:>3}s  prog={progress:>3}%  "
                           f"brewT={brew_temp/10:>5.1f}  steamT={steam_temp/10:>5.1f}  "
                           f"{marker}")
