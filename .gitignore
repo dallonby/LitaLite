@@ -1,0 +1,26 @@
+# Wendougee proprietary artifacts — do not redistribute
+*.xapk
+*.apk
+apk/
+jadx-out/
+jadx.log
+captures/web/
+captures/ble.html
+captures/libapp.so
+
+# local capture data (HCI logs, GATT dumps, listener traces — may contain device-specific info)
+captures/*.log
+captures/*.pcap
+captures/*.btsnoop
+captures/gatt_*.txt
+captures/listen_*.txt
+
+# python
+.venv/
+__pycache__/
+*.pyc
+
+# editor
+.vscode/
+.idea/
+.DS_Store
