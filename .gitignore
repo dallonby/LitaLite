@@ -7,13 +7,17 @@ jadx.log
 captures/web/
 captures/ble.html
 captures/libapp.so
+captures/libapp_*.txt
 
-# local capture data (HCI logs, GATT dumps, listener traces — may contain device-specific info)
+# Local capture data — device-specific (CoreBluetooth UUIDs, MACs) or large/derivable
 captures/*.log
 captures/*.pcap
 captures/*.btsnoop
 captures/gatt_*.txt
 captures/listen_*.txt
+captures/discover_endpoints_*.txt
+captures/*.csv
+captures/snoop/
 
 # python
 .venv/
